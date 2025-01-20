@@ -18,12 +18,16 @@ class WindowManager {
     const win = this.windows.get(routePath)
     if (win) {
       const [currentX] = win.getPosition()
-      win.setPosition(currentX, y)
+      const workArea = screen.getPrimaryDisplay().workArea
+      console.log('workArea:', workArea.y, y)
+
+      win.setPosition(currentX, Math.max(workArea.y, y))
     }
   }
 
   setWindowX(routePath: string, x: number): void {
     const win = this.windows.get(routePath)
+
     if (win) {
       const [, currentY] = win.getPosition()
       win.setPosition(x, currentY)
@@ -43,6 +47,7 @@ class WindowManager {
       height,
       frame: !isTransparent,
       transparent: isTransparent,
+      roundedCorners: false,
       useContentSize: true,
       enableLargerThanScreen: true, // 允许窗口比屏幕大
       resizable: true,
@@ -77,9 +82,10 @@ class WindowManager {
     const _windowHeight = 600
     const x = Math.floor((screenWidth - windowWidth) / 2)
 
+    console.log('screenWidth:', primaryDisplay.workArea.y)
     const win = this.createWindow({
       routePath: 'middle-line',
-      position: { x, y: 0 },
+      position: { x, y: primaryDisplay.workArea.y },
       // width: windowWidth,
       // height: windowHeight,
     })
@@ -87,7 +93,7 @@ class WindowManager {
     win.on('resize', () => {
       const [width] = win.getSize()
       const newX = Math.floor((screenWidth - width) / 2)
-      win.setPosition(newX, 0)
+      win.setPosition(newX, primaryDisplay.workArea.y)
     })
 
     return win
@@ -96,11 +102,11 @@ class WindowManager {
   private loadContent(win: BrowserWindow, routePath: string): void {
     const isDev = process.env.NODE_ENV === 'development'
 
-    if (isDev) {
+    if (isDev)
       win.loadURL(`http://localhost:1234/#/${routePath}`)
-      win.webContents.openDevTools()
-    }
-    else { win.loadFile(path.join(CURRENT_DIR_PATH, `../renderer/index.html/#/${routePath}`)) }
+      // win.webContents.openDevTools()
+
+    else win.loadFile(path.join(CURRENT_DIR_PATH, `../renderer/index.html/#/${routePath}`))
   }
 
   getWindow(routePath: string): BrowserWindow | undefined {

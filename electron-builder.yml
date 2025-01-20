@@ -5,15 +5,20 @@ asar: true
 
 directories:
   output: release/${version}
-  buildResources: resources
+  # buildResources: resources
 files:
   - package.json
   - dist/main
   - dist/renderer
   - dist/preload
-  - resources
+  # - resources
 publish: null
 win:
   artifactName: "${productName}_${version}.${ext}"
   target:
     - nsis
+mac:
+  artifactName: "${productName}_${version}.${ext}"
+  target:
+    - dmg
+    - zip
