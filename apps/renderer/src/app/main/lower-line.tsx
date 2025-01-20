@@ -1,22 +1,15 @@
+import type { Setting } from '@renderer/lib/constant'
 import LinePanel from '@renderer/components/line-panel'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 import { client } from '@renderer/ipc/client'
+import { defaultSetting } from '@renderer/lib/constant'
 import { useEffect } from 'react'
 
 export default function LowerLine() {
-  const [setting] = useLocalStorage('setting', {
-    upper: '',
-    lower: '',
-    fontSize: 30,
-    backgroundColor: '#ef4444',
-    fontColor: '#000',
-    font: 'Arial',
-    lineHorizontalOffset: 100,
-  })
-  console.log(setting.lower)
+  const [setting] = useLocalStorage<Setting>('setting', defaultSetting)
   useEffect(() => {
     client.setLineHorizontalOffset({ offset: setting.lineHorizontalOffset })
-  }, [])
+  }, [setting])
   return (
     <LinePanel
       text={setting.lower}

@@ -1,15 +1,16 @@
+import type { MutableRefObject } from 'react'
+import useIgnoreMouseEvents from '@renderer/hooks/useIgnoreMouseEvent'
 import useResizeObserver from '@renderer/hooks/useResizeObserver'
 import { client } from '@renderer/ipc/client'
 import clsx from 'clsx'
 import { debounce } from 'lodash-es'
 import { useEffect } from 'react'
-
 export default function LinePanel({
   text,
   fontSize,
-  backgroundColor = '#ef4444',
-  fontColor = '#000',
-  font = 'Arial',
+  backgroundColor,
+  fontColor,
+  font,
   className,
   direction = 'column',
 }: {
@@ -22,7 +23,7 @@ export default function LinePanel({
   direction?: 'row' | 'column'
 }) {
   const [ref, dimensions] = useResizeObserver<HTMLDivElement>()
-
+  const { setIgnoreMouseEvents } = useIgnoreMouseEvents()
   useEffect(() => {
     const updateWindowSize = debounce(() => {
       if (dimensions.width > 0 && dimensions.height > 0) {
@@ -33,13 +34,21 @@ export default function LinePanel({
           })
         })
       }
-    }, 100)
+    }, 5)
 
     updateWindowSize()
     return () => {
       updateWindowSize.cancel()
     }
   }, [dimensions.width, dimensions.height])
+
+  useEffect(() => {
+    if (ref.current) {
+      const cleanup = setIgnoreMouseEvents(ref as MutableRefObject<HTMLDivElement>)
+      return cleanup
+    }
+  }, [setIgnoreMouseEvents])
+
   return (
     <div
       ref={ref}

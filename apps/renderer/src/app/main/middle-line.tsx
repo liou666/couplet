@@ -1,15 +1,11 @@
+import type { Setting } from '@renderer/lib/constant'
 import LinePanel from '@renderer/components/line-panel'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
+import { defaultSetting } from '@renderer/lib/constant'
 
 export default function MiddleLine() {
-  const [setting] = useLocalStorage('setting', {
-    fontSize: 30,
-    backgroundColor: '#ef4444',
-    fontColor: '#000',
-    font: 'Arial',
-    middle: '',
-  })
-
+  const [setting] = useLocalStorage<Setting>('setting', defaultSetting)
+  console.log('MiddleLine', setting)
   return (
     <LinePanel
       direction="row"

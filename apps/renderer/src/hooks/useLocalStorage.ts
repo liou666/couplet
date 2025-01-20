@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prevValue: T) => T)) => void] {
-  // 从 localStorage 获取数据
   const getStoredValue = () => {
     try {
       const item = localStorage.getItem(key)
@@ -13,10 +12,8 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
     }
   }
 
-  // 状态管理
   const [storedValue, setStoredValue] = useState<T>(getStoredValue)
 
-  // 更新 localStorage 和 state
   const setValue = (value: T | ((prevValue: T) => T)) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value
@@ -28,7 +25,6 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
     }
   }
 
-  // 监听存储变化
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === key && event.newValue) {

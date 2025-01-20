@@ -1,7 +1,6 @@
 import { tipc } from '@egoist/tipc/main'
 import { BrowserWindow, screen } from 'electron'
-import { windowManager } from '../index'
-import { store } from '../lib/store'
+import { windowManager } from '../window'
 const t = tipc.create()
 
 export const router = {
@@ -54,7 +53,8 @@ export const router = {
       if (context.sender.getType() === 'window') {
         const window: BrowserWindow | null = (context.sender as Sender).getOwnerBrowserWindow()
         if (!window) return
-        console.log(input)
+        // console.log(input)
+        // console.log(window.getSize())
         window.setSize(Math.floor(input.width), Math.floor(input.height))
       }
     }),
@@ -66,16 +66,6 @@ export const router = {
         if (!window) return
         window.setPosition(input.x, input.y)
       }
-    }),
-  setStore: t.procedure
-    .input<{ key: string, value: any }>()
-    .action(async ({ input }) => {
-      store.set(input.key, input.value)
-    }),
-  getStore: t.procedure
-    .input<{ key: string }>()
-    .action(async ({ input }) => {
-      return store.get(input.key)
     }),
   getSystemFonts: t.procedure.action(
     async (): Promise<string[]> =>
@@ -118,6 +108,25 @@ export const router = {
     .action(async (): Promise<[number, number]> => {
       return [0, 0]
     }),
+
+  setResizable: t.procedure
+    .input<{ resizable: boolean }>()
+    .action(async ({ input }) => {
+      const window = BrowserWindow.getAllWindows()
+      window.forEach((w) => {
+        w.setResizable(input.resizable)
+      })
+    }),
+
+  setIgnoreMouseEvents: t.procedure
+    .input<{ ignore: boolean, forward?: boolean }>()
+    .action(async ({ input }) => {
+      const window = BrowserWindow.getAllWindows()
+      window.forEach((w) => {
+        w.setIgnoreMouseEvents(input.ignore, { forward: !!input.forward })
+      })
+    }),
+
 }
 
 interface Sender extends Electron.WebContents {
