@@ -1,6 +1,7 @@
 import { tipc } from '@egoist/tipc/main'
 import { BrowserWindow, screen } from 'electron'
-import { windowManager } from '../window'
+import { windowManager, WindowType } from '../window'
+
 const t = tipc.create()
 
 export const router = {
@@ -91,17 +92,17 @@ export const router = {
   setLineTop: t.procedure
     .input<{ top: number }>()
     .action(async ({ input }) => {
-      windowManager.setWindowY('upper-line', input.top)
-      windowManager.setWindowY('lower-line', input.top)
+      windowManager.setWindowY(WindowType.UP_LINE, input.top)
+      windowManager.setWindowY(WindowType.LOW_LINE, input.top)
     }),
 
   setLineHorizontalOffset: t.procedure
     .input<{ offset: number }>()
     .action(async ({ input }) => {
-      windowManager.setWindowX('upper-line', input.offset)
-      const width = windowManager.getWindow('upper-line')?.getSize()?.[0] || 0
+      windowManager.setWindowX(WindowType.UP_LINE, input.offset)
+      const width = windowManager.getWindow(WindowType.UP_LINE)?.getSize()?.[0] || 0
       const screenWidth = screen.getPrimaryDisplay().bounds.width
-      windowManager.setWindowX('lower-line', screenWidth - input.offset - width)
+      windowManager.setWindowX(WindowType.LOW_LINE, screenWidth - input.offset - width)
     }),
 
   getLineHorizontalOffset: t.procedure

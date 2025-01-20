@@ -65,7 +65,7 @@
   }
 
   body {
-    @apply bg-transparent text-foreground  select-none no-drag-region;
+    @apply bg-transparent text-foreground select-none no-drag-region;
     /* @apply select-none no-drag-region; */
 
   }

@@ -2,7 +2,7 @@ import { registerIpcMain } from '@egoist/tipc/main'
 import { router } from '@main/src/ipc/router'
 import { app, BrowserWindow, screen } from 'electron'
 import { initI18n } from './lib/i18n'
-import { windowManager } from './window'
+import { windowManager, WindowType } from './window'
 
 async function initializeApp(): Promise<void> {
   try {
@@ -12,7 +12,7 @@ async function initializeApp(): Promise<void> {
     const _screenWidth = screen.getPrimaryDisplay().bounds.width
 
     windowManager.createWindow({
-      routePath: 'setting',
+      routePath: WindowType.SETTING,
       position: { x: 500, y: 100 },
       isTransparent: false,
       resizable: true,
@@ -21,12 +21,12 @@ async function initializeApp(): Promise<void> {
     })
 
     windowManager.createWindow({
-      routePath: 'upper-line',
+      routePath: WindowType.UP_LINE,
       position: { x: 100, y: 100 },
     })
 
     const _lowerLine = windowManager.createWindow({
-      routePath: 'lower-line',
+      routePath: WindowType.LOW_LINE,
       position: { x: 800, y: 100 },
     })
 
@@ -40,7 +40,7 @@ async function initializeApp(): Promise<void> {
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
         windowManager.createWindow({
-          routePath: 'setting',
+          routePath: WindowType.SETTING,
           position: { x: 500, y: 100 },
           isTransparent: false,
         })

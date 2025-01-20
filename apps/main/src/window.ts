@@ -1,123 +1,180 @@
 import path from 'path'
-import { BrowserWindow, screen } from 'electron'
+import { app, BrowserWindow, screen } from 'electron'
 import { CURRENT_DIR_PATH } from './utils'
 
+const DEFAULT_WINDOW_CONFIG = {
+  isTransparent: true,
+  width: 1,
+  height: 1,
+  resizable: false,
+} as const
+
+export interface Position {
+  x: number
+  y: number
+}
+
 export interface WindowConfig {
-  routePath: string
-  position: { x: number, y: number }
+  routePath: WindowType
+  position: Position
   isTransparent?: boolean
   width?: number
   height?: number
   resizable?: boolean
 }
 
+export enum WindowType {
+  SETTING = 'setting',
+  MIDDLE_LINE = 'middle-line',
+  UP_LINE = 'upper-line',
+  LOW_LINE = 'lower-line',
+}
+
 class WindowManager {
-  private windows: Map<string, BrowserWindow> = new Map()
+  private readonly windows: Map<string, BrowserWindow> = new Map()
+  private readonly isDev = !app.isPackaged
 
-  setWindowY(routePath: string, y: number): void {
-    const win = this.windows.get(routePath)
-    if (win) {
-      const [currentX] = win.getPosition()
-      const workArea = screen.getPrimaryDisplay().workArea
-      console.log('workArea:', workArea.y, y)
-
-      win.setPosition(currentX, Math.max(workArea.y, y))
-    }
+  private getAssetPath(...paths: string[]): string {
+    const basePath = path.join(CURRENT_DIR_PATH, '..')
+    return path.join(basePath, ...paths)
   }
 
-  setWindowX(routePath: string, x: number): void {
-    const win = this.windows.get(routePath)
+  private updateWindowPosition(
+    routePath: WindowType,
+    updateFn: (win: BrowserWindow) => void,
+  ): void {
+    const win = this.getWindow(routePath)
+    if (win)
+      updateFn(win)
+  }
 
-    if (win) {
+  public setWindowY(routePath: WindowType, y: number): void {
+    this.updateWindowPosition(routePath, (win) => {
+      const [currentX] = win.getPosition()
+      const { y: workAreaY } = screen.getPrimaryDisplay().workArea
+      win.setPosition(currentX, Math.max(workAreaY, y))
+    })
+  }
+
+  public setWindowX(routePath: WindowType, x: number): void {
+    this.updateWindowPosition(routePath, (win) => {
       const [, currentY] = win.getPosition()
       win.setPosition(x, currentY)
-    }
+    })
   }
 
-  createWindow({
-    routePath,
-    position,
-    isTransparent = true,
-    width = 1,
-    height = 1,
-    resizable = false,
-  }: WindowConfig): BrowserWindow {
+  public createWindow(config: WindowConfig): BrowserWindow {
+    const {
+      routePath,
+      position,
+      ...rest
+    } = config
+
+    const windowConfig = {
+      ...DEFAULT_WINDOW_CONFIG,
+      ...rest,
+    }
+
     const win = new BrowserWindow({
-      width,
-      height,
-      frame: !isTransparent,
-      transparent: isTransparent,
+      width: windowConfig.width,
+      height: windowConfig.height,
+      frame: !windowConfig.isTransparent,
+      skipTaskbar: true,
+      transparent: windowConfig.isTransparent,
       roundedCorners: false,
       useContentSize: true,
-      enableLargerThanScreen: true, // 允许窗口比屏幕大
-      resizable: true,
+      enableLargerThanScreen: true,
+      resizable: windowConfig.resizable,
       webPreferences: {
-        preload: path.join(CURRENT_DIR_PATH, '../preload/index.js'),
+        preload: this.getAssetPath('preload', 'index.js'),
         webviewTag: true,
         contextIsolation: true,
         nodeIntegration: false,
       },
-      alwaysOnTop: !isTransparent,
+      alwaysOnTop: !windowConfig.isTransparent,
     })
 
-    // win.setBackgroundMaterial('none')
-    win.setPosition(position.x, position.y)
-    win.setMenuBarVisibility(false)
+    try {
+      this.setupWindow(win, position)
+      this.loadContent(win, routePath)
+      this.windows.set(routePath, win)
 
-    if (!resizable) {
-      win.on('will-resize', (event) => {
-        event.preventDefault()
-      })
+      if (routePath === WindowType.SETTING)
+        win.on('closed', () => app.quit())
+
+      return win
     }
-    this.loadContent(win, routePath)
-    this.windows.set(routePath, win)
-
-    return win
+    catch (error) {
+      console.error('Error creating window:', error)
+      throw error
+    }
   }
 
-  createMiddleLine(): BrowserWindow {
-    const primaryDisplay = screen.getPrimaryDisplay()
-    const { width: screenWidth } = primaryDisplay.workAreaSize
-    const windowWidth = 800
-    const _windowHeight = 600
-    const x = Math.floor((screenWidth - windowWidth) / 2)
+  public createMiddleLine(): BrowserWindow {
+    const display = screen.getPrimaryDisplay()
+    const { width: screenWidth, height: _screenHeight } = display.workAreaSize
+    const x = Math.floor(screenWidth / 2)
 
-    console.log('screenWidth:', primaryDisplay.workArea.y)
     const win = this.createWindow({
-      routePath: 'middle-line',
-      position: { x, y: primaryDisplay.workArea.y },
-      // width: windowWidth,
-      // height: windowHeight,
+      routePath: WindowType.MIDDLE_LINE,
+      position: { x, y: display.workArea.y },
     })
 
-    win.on('resize', () => {
-      const [width] = win.getSize()
-      const newX = Math.floor((screenWidth - width) / 2)
-      win.setPosition(newX, primaryDisplay.workArea.y)
-    })
+    this.setupMiddleLineResizeHandler(win, screenWidth)
 
     return win
   }
 
-  private loadContent(win: BrowserWindow, routePath: string): void {
-    const isDev = process.env.NODE_ENV === 'development'
-
-    if (isDev)
-      win.loadURL(`http://localhost:1234/#/${routePath}`)
-      // win.webContents.openDevTools()
-
-    else win.loadFile(path.join(CURRENT_DIR_PATH, `../renderer/index.html/#/${routePath}`))
-  }
-
-  getWindow(routePath: string): BrowserWindow | undefined {
+  public getWindow(routePath: string): BrowserWindow | undefined {
     return this.windows.get(routePath)
   }
 
-  closeAll(): void {
+  public closeAll(): void {
     this.windows.forEach(window => window.close())
     this.windows.clear()
   }
-}
-const windowManager = new WindowManager()
 
-export { windowManager }
+  private setupWindow(
+    win: BrowserWindow,
+    position: Position,
+  ): void {
+    win.setPosition(position.x, position.y)
+    win.setMenuBarVisibility(false)
+
+    if (!DEFAULT_WINDOW_CONFIG.resizable)
+      win.on('will-resize', event => event.preventDefault())
+  }
+
+  private setupMiddleLineResizeHandler(
+    win: BrowserWindow,
+    screenWidth: number,
+  ): void {
+    win.on('resize', () => {
+      const [width] = win.getSize()
+      const newX = Math.floor((screenWidth - width) / 2)
+      const [, currentY] = win.getPosition()
+      win.setPosition(newX, currentY)
+    })
+  }
+
+  private async loadContent(win: BrowserWindow, routePath: string): Promise<void> {
+    try {
+      if (this.isDev) {
+        await win.loadURL(`http://localhost:1234/#/${routePath}`)
+      }
+      else {
+        const indexPath = this.getAssetPath('renderer', 'index.html')
+        await win.loadFile(indexPath, { hash: routePath })
+      }
+
+      if (this.isDev)
+        win.webContents.openDevTools()
+    }
+    catch (error) {
+      console.error('Error loading content:', error)
+      throw error
+    }
+  }
+}
+
+export const windowManager = new WindowManager()

@@ -1,11 +1,14 @@
-appId: tiechun
+appId: com.liou666.ptiechun
 productName: TieChun
 copyright: Copyright © 2025.
-asar: true
+asar: false
+
+icon: resources/icon.ico
 
 directories:
   output: release/${version}
-  # buildResources: resources
+  buildResources: resources
+
 files:
   - package.json
   - dist/main
@@ -15,10 +18,19 @@ files:
 publish: null
 win:
   artifactName: "${productName}_${version}.${ext}"
+  icon: resources/icon.ico
   target:
-    - nsis
+    - target: nsis
+      arch:
+        - x64
+
 mac:
   artifactName: "${productName}_${version}.${ext}"
   target:
-    - dmg
-    - zip
+    - default
+  icon: resources/icon.icns
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false

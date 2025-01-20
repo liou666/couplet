@@ -57,7 +57,7 @@ const ColorPicker = React.memo(({
 
     timeoutRef.current = setTimeout(() => {
       onChange(newColor)
-    }, 100)
+    }, 5)
   }, [onChange])
 
   useEffect(() => {
