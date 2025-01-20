@@ -1,0 +1,13 @@
+{
+  "web": {
+    "theme": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    }
+  },
+  "native": {
+    "items": "You have {{count}} items",
+    "greet": "Hello, {{name}}!"
+  }
+}

@@ -1,0 +1,19 @@
+appId: xxx
+productName: xxx
+copyright: Copyright © 2025.
+asar: true
+
+directories:
+  output: release/${version}
+  buildResources: resources
+files:
+  - package.json
+  - dist/main
+  - dist/renderer
+  - dist/preload
+  - resources
+publish: null
+win:
+  artifactName: "${productName}_${version}.${ext}"
+  target:
+    - nsis
