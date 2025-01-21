@@ -1,5 +1,6 @@
 import path from 'path'
 import { app, BrowserWindow, screen } from 'electron'
+import { isMacOS } from './env'
 import { CURRENT_DIR_PATH } from './lib/utils'
 
 const DEFAULT_WINDOW_CONFIG = {
@@ -102,13 +103,21 @@ class WindowManager {
       this.windows.set(routePath, win)
 
       if (routePath === WindowType.SETTING) {
-        // @ts-expect-error
-        win.on('close', (event: Event) => {
-          event.preventDefault()
-          win.hide()
-        })
+        if (!isMacOS) {
+          // @ts-expect-error
+          win.on('close', (event: Event) => {
+            event.preventDefault()
+            win.hide()
+          })
+        }
+        else {
+          win.on('close', (event: Event) => {
+            this.windows.forEach(window => window.close())
+          })
+        }
       }
       else {
+        console.log('routePath:', routePath)
         win.on('closed', () => {
           this.windows.delete(routePath)
         })

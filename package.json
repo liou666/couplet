@@ -16,6 +16,7 @@
     "dev": "electron-vite dev",
     "dev:web": "vite",
     "build": "electron-vite build && electron-builder",
+    "build:app": "electron-vite build && electron-builder --mac --linux --win",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",

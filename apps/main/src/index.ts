@@ -18,6 +18,7 @@ async function initializeApp(): Promise<void> {
 
     if (!gotTheLock) {
       app.quit()
+      process.exit(0)
     }
     else {
       app.on('second-instance', () => {
@@ -63,18 +64,22 @@ async function initializeApp(): Promise<void> {
     })
 
     app.on('activate', () => {
+      console.log('activate')
       if (BrowserWindow.getAllWindows().length === 0) {
         windowManager.createWindow({
           routePath: WindowType.SETTING,
           position: { x: 500, y: 100 },
           isTransparent: false,
           skipTaskbar: false,
+          width: 600,
+          height: 720,
           // resizable: true,
         })
       }
     })
 
     app.on('before-quit', () => {
+      console.log('before-quit')
       windowManager.closeAll()
     })
   }

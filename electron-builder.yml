@@ -1,7 +1,7 @@
 appId: com.liou666.couplet
 productName: 桌面春联
 copyright: Copyright © 2025.
-asar: false
+asar: true
 
 icon: resources/icon.ico
 
@@ -31,9 +31,13 @@ win:
       arch:
         - x64
 mac:
-  artifactName: "couplet_${version}.${ext}"
+  artifactName: "couplet_${version}_${arch}.${ext}"
+  identity: null
   target:
-    - default
+    - target: default
+      arch:
+        - arm64
+        - x64
   icon: resources/icon.icns
 
 linux:

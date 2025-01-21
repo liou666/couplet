@@ -148,6 +148,8 @@ export default function Page() {
   const [settings, setSettings] = useLocalStorage<Setting>('setting', defaultSetting)
   const ref = useRef<HTMLDivElement>(null)
 
+  const [isLoaded, setIsLoaded] = useState(false)
+
   const updateSetting = useCallback(<K extends keyof typeof settings>(
     key: K,
     value: (typeof settings)[K],
@@ -188,82 +190,97 @@ export default function Page() {
     client.setAlwaysOnTop({ isAlwaysOnTop: settings.isAlwaysOnTop })
   }, [settings])
 
+  useEffect(() => {
+    if (ref.current && !isLoaded)
+      setIsLoaded(true)
+  }, [isLoaded])
+
+  console.log('render setting page')
+
   return (
     <div ref={ref} className="p-4 font-sans flex flex-col gap-2 text-sm bg-background h-[100vh] w-[100vw]">
-      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
-        <LabeledInput
-          label="上联" value={settings.upper}
-          onChange={value => updateSetting('upper', value)}
-        />
-        <LabeledInput
-          label="下联" value={settings.lower}
-          onChange={value => updateSetting('lower', value)}
-        />
-        <LabeledInput
-          label="横批" value={settings.middle}
-          onChange={value => updateSetting('middle', value)}
-        />
-      </div>
-      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
-        <FontSelector
-          value={settings.font} fonts={fonts}
-          onValueChange={value => updateSetting('font', value)}
-        />
-        <LabeledNumberInput
-          label="字体大小" value={settings.fontSize}
-          onChange={handleFontSizeChange} min={30}
-          max={120} step={1}
-        />
-        <ColorPicker
-          label="字体颜色" value={settings.fontColor}
-          onChange={color => updateSetting('fontColor', color)}
-        />
-        <ColorPicker
-          label="背景颜色" value={settings.backgroundColor}
-          onChange={color => updateSetting('backgroundColor', color)}
-        />
-      </div>
-      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
-        <LabeledNumberInput
-          label="顶部偏移量" value={settings.topOffset}
-          onChange={handleLineTopChange} min={0}
-          max={300} step={1}
-        />
-        <LabeledNumberInput
-          label="水平偏移量" value={settings.lineHorizontalOffset}
-          onChange={handleLineHorizontalOffsetChange} min={0}
-          max={300} step={1}
-        />
-        <div className="flex items-center justify-between pb-2">
-          <span className="text-sm">固定在屏幕最上层</span>
-          <Switch checked={settings.isAlwaysOnTop} onCheckedChange={handleAlwaysOnTopChange} />
-        </div>
-      </div>
-      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
-        <div className="flex items-center justify-between ">
-          <span className="text-sm">问题反馈</span>
-          <Button
-            size="icon"
-            variant="outline"
-            onClick={() => {
-              client.openLink('https://github.com/liou666/couplet')
-            }}
-          >
-            <i className="i-mdi-github w-4 h-4" />
-          </Button>
-        </div>
-        {/* <div className="flex items-center justify-between bg-secondary">
-          <span className="text-sm">
-            版本号(
-            {`v${version}`}
-            )
-          </span>
-          <Button size="sm" variant="outline">
-            检查更新
-          </Button>
-        </div> */}
-      </div>
-      <Button onClick={() => resetAllSettings()} className="mt-4">重置所有设置</Button>
+      {
+        // eslint-disable-next-line @stylistic/multiline-ternary
+        isLoaded ? (
+          <>
+            <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
+              <LabeledInput
+                label="上联" value={settings.upper}
+                onChange={value => updateSetting('upper', value)}
+              />
+              <LabeledInput
+                label="下联" value={settings.lower}
+                onChange={value => updateSetting('lower', value)}
+              />
+              <LabeledInput
+                label="横批" value={settings.middle}
+                onChange={value => updateSetting('middle', value)}
+              />
+            </div>
+            <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
+              <FontSelector
+                value={settings.font} fonts={fonts}
+                onValueChange={value => updateSetting('font', value)}
+              />
+              <LabeledNumberInput
+                label="字体大小" value={settings.fontSize}
+                onChange={handleFontSizeChange} min={30}
+                max={120} step={1}
+              />
+              <ColorPicker
+                label="字体颜色" value={settings.fontColor}
+                onChange={color => updateSetting('fontColor', color)}
+              />
+              <ColorPicker
+                label="背景颜色" value={settings.backgroundColor}
+                onChange={color => updateSetting('backgroundColor', color)}
+              />
+            </div>
+            <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
+              <LabeledNumberInput
+                label="顶部偏移量" value={settings.topOffset}
+                onChange={handleLineTopChange} min={0}
+                max={300} step={1}
+              />
+              <LabeledNumberInput
+                label="水平偏移量" value={settings.lineHorizontalOffset}
+                onChange={handleLineHorizontalOffsetChange} min={0}
+                max={300} step={1}
+              />
+              <div className="flex items-center justify-between pb-2">
+                <span className="text-sm">固定在屏幕最上层</span>
+                <Switch checked={settings.isAlwaysOnTop} onCheckedChange={handleAlwaysOnTopChange} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
+              <div className="flex items-center justify-between ">
+                <span className="text-sm">问题反馈</span>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    client.openLink('https://github.com/liou666/couplet')
+                  }}
+                >
+                  <i className="i-mdi-github w-4 h-4" />
+                </Button>
+              </div>
+              {/* <div className="flex items-center justify-between bg-secondary">
+            <span className="text-sm">
+              版本号(
+              {`v${version}`}
+              )
+            </span>
+            <Button size="sm" variant="outline">
+              检查更新
+            </Button>
+          </div> */}
+            </div>
+            <Button onClick={() => resetAllSettings()} className="mt-4">重置所有设置</Button>
+          </>
+        )
+          : (<></>)
+      }
     </div>
   )
 }

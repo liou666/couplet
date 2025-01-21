@@ -23,6 +23,12 @@ class TrayMain {
 
   public async init() {
     try {
+      if (isMacOS) {
+        // macOS no set tray,
+        // app.dock.hide()
+        return
+      }
+
       this.createTray()
       this.updateMenu()
       this.observeEvent()
@@ -59,9 +65,10 @@ class TrayMain {
 
   private createTray() {
     let img: NativeImage | string = this.getAssetPath('icon.ico')
-    if (isMacOS)
-      // TODO: 32x32@2x (144dpi)
-      img = nativeImage.createFromPath(this.getAssetPath('icon.png'))
+    if (isMacOS) {
+    // TODO: 32x32@2x (144dpi)
+      img = nativeImage.createFromPath(this.getAssetPath('iconTemplate@1x.png'))
+    }
 
     this.tray = new Tray(img)
     this.tray.setToolTip('桌面春联')
