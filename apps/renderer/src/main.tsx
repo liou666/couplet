@@ -12,7 +12,7 @@ const $container = document.querySelector('#app') as HTMLElement
 
 ReactDOM.createRoot($container).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="system">
       <RouterProvider router={router} />
     </ThemeProvider>
   </React.StrictMode>,

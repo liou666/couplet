@@ -26,7 +26,7 @@ const LabeledInput = React.memo(({
   }, [onChange])
 
   return (
-    <div className="flex items-center justify-between bg-accent rounded-md">
+    <div className="flex items-center justify-between rounded-md">
       <span className="w-[80px] text-sm">{label}</span>
       <Input
         className="h-[36px] w-[300px] text-sm" value={value}
@@ -65,7 +65,7 @@ const ColorPicker = React.memo(({
   }, [value])
 
   return (
-    <div className="flex items-center justify-between bg-accent rounded-md">
+    <div className="flex items-center justify-between rounded-md">
       <span className="text-sm">{label}</span>
       <div className="flex items-center gap-2">
         <div className="text-sm text-gray-500">{localColor}</div>
@@ -94,7 +94,7 @@ const FontSelector = React.memo(({
   )), [fonts])
 
   return (
-    <div className="flex items-center justify-between bg-accentrounded-md">
+    <div className="flex items-center justify-between rounded-md">
       <span className="text-sm">字体样式</span>
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger className="w-[300px]">
@@ -128,7 +128,7 @@ const LabeledNumberInput = React.memo(({
   }, [onChange])
 
   return (
-    <div className="flex items-center justify-between bg-accent rounded-md">
+    <div className="flex items-center justify-between rounded-md">
       <span className="w-[120px] text-sm">{label}</span>
       <Input
         type="number"
@@ -189,8 +189,8 @@ export default function Page() {
   }, [settings])
 
   return (
-    <div ref={ref} className="p-4 font-sans flex flex-col gap-2 text-sm">
-      <div className="flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
+    <div ref={ref} className="p-4 font-sans flex flex-col gap-2 text-sm bg-background h-[100vh] w-[100vw]">
+      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
         <LabeledInput
           label="上联" value={settings.upper}
           onChange={value => updateSetting('upper', value)}
@@ -204,7 +204,7 @@ export default function Page() {
           onChange={value => updateSetting('middle', value)}
         />
       </div>
-      <div className="flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
+      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
         <FontSelector
           value={settings.font} fonts={fonts}
           onValueChange={value => updateSetting('font', value)}
@@ -223,7 +223,7 @@ export default function Page() {
           onChange={color => updateSetting('backgroundColor', color)}
         />
       </div>
-      <div className="flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
+      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
         <LabeledNumberInput
           label="顶部偏移量" value={settings.topOffset}
           onChange={handleLineTopChange} min={0}
@@ -234,10 +234,34 @@ export default function Page() {
           onChange={handleLineHorizontalOffsetChange} min={0}
           max={300} step={1}
         />
+        <div className="flex items-center justify-between pb-2">
+          <span className="text-sm">固定在屏幕最上层</span>
+          <Switch checked={settings.isAlwaysOnTop} onCheckedChange={handleAlwaysOnTopChange} />
+        </div>
       </div>
-      <div className="flex items-center justify-between bg-accent p-2 rounded-md">
-        <span className="text-sm">总是在屏幕最上方</span>
-        <Switch checked={settings.isAlwaysOnTop} onCheckedChange={handleAlwaysOnTopChange} />
+      <div className="flex flex-col gap-3 bg-secondary p-2 rounded-md">
+        <div className="flex items-center justify-between ">
+          <span className="text-sm">问题反馈</span>
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => {
+              client.openLink('https://github.com/liou666/couplet')
+            }}
+          >
+            <i className="i-mdi-github w-4 h-4" />
+          </Button>
+        </div>
+        {/* <div className="flex items-center justify-between bg-secondary">
+          <span className="text-sm">
+            版本号(
+            {`v${version}`}
+            )
+          </span>
+          <Button size="sm" variant="outline">
+            检查更新
+          </Button>
+        </div> */}
       </div>
       <Button onClick={() => resetAllSettings()} className="mt-4">重置所有设置</Button>
     </div>

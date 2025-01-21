@@ -12,9 +12,9 @@ export interface Setting {
 }
 
 export const defaultSetting: Setting = {
-  upper: '蛇蛇有道迎新岁',
-  lower: '财源广进贺新春',
-  middle: '万事如意',
+  upper: '屏幕春联传雅意',
+  lower: '指尖科技绽春花 ',
+  middle: '春满人间',
   fontSize: 60,
   backgroundColor: '#ef4444',
   fontColor: '#000',

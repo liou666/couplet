@@ -1,5 +1,5 @@
 import { tipc } from '@egoist/tipc/main'
-import { BrowserWindow, screen } from 'electron'
+import { BrowserWindow, screen, shell } from 'electron'
 import { windowManager, WindowType } from '../window'
 
 const t = tipc.create()
@@ -119,12 +119,15 @@ export const router = {
 
   setIgnoreMouseEvents: t.procedure
     .input<{ ignore: boolean, forward?: boolean }>()
-    .action(async ({ input }) => {
-      const window = BrowserWindow.getAllWindows()
-      window.forEach((w) => {
-        w.setIgnoreMouseEvents(input.ignore, { forward: !!input.forward })
-      })
+    .action(async ({ input, context }) => {
+      const window: BrowserWindow | null = (context.sender as Sender).getOwnerBrowserWindow()
+      if (!window) return
+      window.setIgnoreMouseEvents(input.ignore, { forward: !!input.forward })
     }),
+
+  openLink: t.procedure.input<string>().action(async ({ input }) => {
+    shell.openExternal(input)
+  }),
 
 }
 

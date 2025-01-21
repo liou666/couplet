@@ -21,19 +21,26 @@ publish:
   owner: liou666
   repo: couplet
 
+# afterSign: scripts/notarize.js
+
 win:
-  artifactName: "${productName}_${version}.${ext}"
+  artifactName: "couplet_${version}.${ext}"
   icon: resources/icon.ico
   target:
     - target: nsis
       arch:
         - x64
-
 mac:
-  artifactName: "${productName}_${version}.${ext}"
+  artifactName: "couplet_${version}.${ext}"
   target:
     - default
   icon: resources/icon.icns
+
+linux:
+  icon: resources/icon-1024.png
+  target: [AppImage]
+  category: Utility
+  artifactName: "couplet_${version}.${ext}"
 
 nsis:
   oneClick: false

@@ -5,8 +5,7 @@ import { useCallback, useEffect } from 'react'
 export default function useIgnoreMouseEvents() {
   const handleGlobalMouseover = useCallback((e: MouseEvent) => {
     const target = e.target as HTMLElement
-    const isRootElement = target.nodeName === 'BODY' || target.nodeName === 'HTML'
-
+    const isRootElement = target.nodeName === 'HTML'
     if (isRootElement)
       client.setIgnoreMouseEvents({ ignore: true, forward: true })
   }, [])

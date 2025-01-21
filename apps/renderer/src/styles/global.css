@@ -49,7 +49,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --input: 0 0% 22.9%;
     --ring: 0 0% 83.1%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -66,8 +66,6 @@
 
   body {
     @apply bg-transparent text-foreground select-none no-drag-region;
-    /* @apply select-none no-drag-region; */
-
   }
 }
 

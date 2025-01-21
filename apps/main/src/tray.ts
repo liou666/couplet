@@ -48,7 +48,7 @@ class TrayMain {
         visible: true,
         click: () => {
           app.quit()
-          process.exit()
+          process.kill(0)
         },
       },
     ]
@@ -72,7 +72,9 @@ class TrayMain {
       return
 
     this.tray.on('click', () => {
-      windowManager.getWindow(WindowType.SETTING)?.show()
+      windowManager.getWindow(WindowType.MIDDLE_LINE)?.focus()
+      windowManager.getWindow(WindowType.LOW_LINE)?.focus()
+      windowManager.getWindow(WindowType.UP_LINE)?.focus()
     })
   }
 }

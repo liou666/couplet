@@ -15,6 +15,7 @@ async function initializeApp(): Promise<void> {
     const _screenWidth = screen.getPrimaryDisplay().bounds.width
 
     const gotTheLock = app.requestSingleInstanceLock()
+
     if (!gotTheLock) {
       app.quit()
     }
@@ -34,8 +35,8 @@ async function initializeApp(): Promise<void> {
       position: { x: 500, y: 100 },
       isTransparent: false,
       resizable: true,
-      width: 500,
-      height: 700,
+      width: 600,
+      height: 720,
       skipTaskbar: false,
     })
 
@@ -68,6 +69,7 @@ async function initializeApp(): Promise<void> {
           position: { x: 500, y: 100 },
           isTransparent: false,
           skipTaskbar: false,
+          // resizable: true,
         })
       }
     })
