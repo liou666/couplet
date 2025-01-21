@@ -1,4 +1,4 @@
-# <img src="./resources/icon.ico" width="80px" align="center" alt="couplet icon"> Couplet - 桌面对联
+# <img src="./resources/icon.ico" width="80px" align="center" alt="couplet icon"> Couplet - 桌面春联
 >
 > 把春节氛围带到你的电脑桌面！
 
@@ -62,15 +62,17 @@ pnpm dev
 ## 💭 常见问题
 
 <details>
-<summary>1. MacOS 提示无法打开“桌面对联”，因为Apple无法检查其是否包含恶意软件。</summary>
-如遇到"无法打开应用程序"的安全提示，可：
+<summary>1. MacOS 提示"无法打开'桌面春联'，因为 Apple 无法检查其是否包含恶意软件"，"'桌面春联'已损坏" </summary>
 
-1. 在"系统偏好设置 > 安全性与隐私"中允许应用运行
-2. 或通过终端执行：
+> 提示：这些安全提示是 MacOS 的正常保护机制，主要是因为应用未经过 Apple 认证签名导致。按照以下步骤操作后即可正常使用。
+
+1. 通过终端执行：
 
 ```bash
-xattr -rd com.apple.quarantine /path/to/Couplet.app
+xattr -rd com.apple.quarantine /Applications/桌 面 春 联 .app
 ```
+
+2. 在"系统偏好设置 > 安全性与隐私"中允许应用运行
 
 </details>
 
