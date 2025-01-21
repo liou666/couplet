@@ -72,7 +72,7 @@ pnpm dev
 xattr -rd com.apple.quarantine /path/to/Couplet.app
 ```
 
-<details>
+</details>
 
 ## 📄 License
 
