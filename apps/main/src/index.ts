@@ -1,15 +1,33 @@
 import { registerIpcMain } from '@egoist/tipc/main'
+import { isDev, isMacOS } from '@main/src/env'
 import { router } from '@main/src/ipc/router'
 import { app, BrowserWindow, screen } from 'electron'
 import { initI18n } from './lib/i18n'
+import tray from './tray'
+import { updateManager } from './update-manager'
 import { windowManager, WindowType } from './window'
-
 async function initializeApp(): Promise<void> {
   try {
     await app.whenReady()
     await initI18n()
     registerIpcMain(router)
+
     const _screenWidth = screen.getPrimaryDisplay().bounds.width
+
+    const gotTheLock = app.requestSingleInstanceLock()
+    if (!gotTheLock) {
+      app.quit()
+    }
+    else {
+      app.on('second-instance', () => {
+        const settingWindow = windowManager.getWindow(WindowType.SETTING)
+        if (settingWindow) {
+          if (settingWindow.isMinimized()) settingWindow.restore()
+          settingWindow.show()
+          settingWindow.focus()
+        }
+      })
+    }
 
     windowManager.createWindow({
       routePath: WindowType.SETTING,
@@ -18,6 +36,7 @@ async function initializeApp(): Promise<void> {
       resizable: true,
       width: 500,
       height: 700,
+      skipTaskbar: false,
     })
 
     windowManager.createWindow({
@@ -32,8 +51,13 @@ async function initializeApp(): Promise<void> {
 
     windowManager.createMiddleLine()
 
+    tray.init()
+
+    if (!isDev)
+      updateManager.checkForUpdates()
+
     app.on('window-all-closed', () => {
-      if (process.platform !== 'darwin')
+      if (isMacOS)
         app.quit()
     })
 
@@ -43,8 +67,13 @@ async function initializeApp(): Promise<void> {
           routePath: WindowType.SETTING,
           position: { x: 500, y: 100 },
           isTransparent: false,
+          skipTaskbar: false,
         })
       }
+    })
+
+    app.on('before-quit', () => {
+      windowManager.closeAll()
     })
   }
   catch (error) {

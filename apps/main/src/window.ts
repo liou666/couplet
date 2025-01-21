@@ -1,12 +1,13 @@
 import path from 'path'
 import { app, BrowserWindow, screen } from 'electron'
-import { CURRENT_DIR_PATH } from './utils'
+import { CURRENT_DIR_PATH } from './lib/utils'
 
 const DEFAULT_WINDOW_CONFIG = {
   isTransparent: true,
   width: 1,
   height: 1,
   resizable: false,
+  skipTaskbar: true,
 } as const
 
 export interface Position {
@@ -21,6 +22,7 @@ export interface WindowConfig {
   width?: number
   height?: number
   resizable?: boolean
+  skipTaskbar?: boolean
 }
 
 export enum WindowType {
@@ -79,9 +81,9 @@ class WindowManager {
       width: windowConfig.width,
       height: windowConfig.height,
       frame: !windowConfig.isTransparent,
-      skipTaskbar: true,
+      skipTaskbar: windowConfig.skipTaskbar,
       transparent: windowConfig.isTransparent,
-      roundedCorners: false,
+      roundedCorners: false, // for macOS
       useContentSize: true,
       enableLargerThanScreen: true,
       resizable: windowConfig.resizable,
@@ -91,7 +93,7 @@ class WindowManager {
         contextIsolation: true,
         nodeIntegration: false,
       },
-      alwaysOnTop: !windowConfig.isTransparent,
+      alwaysOnTop: false,
     })
 
     try {
@@ -99,9 +101,18 @@ class WindowManager {
       this.loadContent(win, routePath)
       this.windows.set(routePath, win)
 
-      if (routePath === WindowType.SETTING)
-        win.on('closed', () => app.quit())
-
+      if (routePath === WindowType.SETTING) {
+        // @ts-expect-error
+        win.on('close', (event: Event) => {
+          event.preventDefault()
+          win.hide()
+        })
+      }
+      else {
+        win.on('closed', () => {
+          this.windows.delete(routePath)
+        })
+      }
       return win
     }
     catch (error) {
@@ -167,8 +178,8 @@ class WindowManager {
         await win.loadFile(indexPath, { hash: routePath })
       }
 
-      if (this.isDev)
-        win.webContents.openDevTools()
+      // if (this.isDev)
+      //   win.webContents.openDevTools()
     }
     catch (error) {
       console.error('Error loading content:', error)

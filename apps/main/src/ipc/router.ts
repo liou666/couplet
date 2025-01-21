@@ -54,8 +54,6 @@ export const router = {
       if (context.sender.getType() === 'window') {
         const window: BrowserWindow | null = (context.sender as Sender).getOwnerBrowserWindow()
         if (!window) return
-        // console.log(input)
-        // console.log(window.getSize())
         window.setSize(Math.floor(input.width), Math.floor(input.height))
       }
     }),

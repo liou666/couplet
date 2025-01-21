@@ -1,8 +1,16 @@
 {
-  "name": "TieChun",
-  "version": "0.0.0",
+  "name": "couplet",
+  "version": "0.1.0",
   "private": true,
+  "description": "Display Chinese Spring Festival couplets on your desktop.",
+  "author": "Liou666 <liou666@126.com>",
   "license": "MIT",
+  "repository": "https://github.com/liou666/couplet",
+  "keywords": [
+    "Chinese New Year",
+    "Couplet",
+    "Spring Festival"
+  ],
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
@@ -43,6 +51,7 @@
     "clsx": "^2.1.1",
     "electron": "^33.3.1",
     "electron-builder": "^25.1.8",
+    "electron-updater": "^6.3.9",
     "electron-vite": "^2.3.0",
     "eslint": "^9.18.0",
     "inversify": "^6.2.1",

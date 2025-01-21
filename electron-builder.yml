@@ -1,5 +1,5 @@
-appId: com.liou666.ptiechun
-productName: TieChun
+appId: com.liou666.couplet
+productName: 桌面春联
 copyright: Copyright © 2025.
 asar: false
 
@@ -14,8 +14,13 @@ files:
   - dist/main
   - dist/renderer
   - dist/preload
-  # - resources
-publish: null
+  - resources
+
+publish:
+  provider: github
+  owner: liou666
+  repo: couplet
+
 win:
   artifactName: "${productName}_${version}.${ext}"
   icon: resources/icon.ico
@@ -29,6 +34,7 @@ mac:
   target:
     - default
   icon: resources/icon.icns
+
 nsis:
   oneClick: false
   perMachine: false
