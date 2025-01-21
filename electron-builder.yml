@@ -31,7 +31,7 @@ win:
       arch:
         - x64
 mac:
-  artifactName: "couplet_${version}_${arch}.${ext}"
+  artifactName: "couplet_${arch}_${version}.${ext}"
   identity: null
   target:
     - target: default
